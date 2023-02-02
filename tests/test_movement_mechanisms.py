@@ -35,7 +35,7 @@ def energy_mm(surf) -> Energy:
         fm=fmean,
         dest=(1, 1),
         deg=0.0,
-        steps=100,
+        steps=1000,
         energy=1000,
     )
 
@@ -50,7 +50,7 @@ def barrier_points() -> List[Tuple[int, int]]:
     return [coord for coord in window(2) if coord not in window(1)]
 
 
-def test_Energy(energy_mm, barrier_points):
+def test_energy_step(energy_mm, barrier_points):
     """
     This test checks that the energy movement mechanism is correctly
     initialised. It then performs a sequence of timesteps until the conditions
@@ -76,3 +76,13 @@ def test_Energy(energy_mm, barrier_points):
         assert (
             energy_mm.ij not in barrier_points
         ), f"Landed on barrier point {energy_mm.ij} on timestep {energy_mm.t}!"
+
+
+def test_energy_mechanism(energy_mm, barrier_points):
+    """Test-run the full movement mechanism."""
+    output_data = energy_mm.run_mechanism()
+    x_coords = output_data[0]
+    y_coords = output_data[1]
+    coords = list(zip(x_coords, y_coords))
+    # test that no point crossed the barrier
+    assert set(coords).intersection(barrier_points) == set()
